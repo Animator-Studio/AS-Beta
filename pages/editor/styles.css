@@ -49,7 +49,7 @@ h1, h2, h3, h4, h5, h6, p {
     text-overflow: ellipsis;
     padding: 4px;
     display: inline-block;
-    background: black;
+    background: #2c34b4;
     border-radius: 8px;
     margin: 8px;
     height: 32px;
