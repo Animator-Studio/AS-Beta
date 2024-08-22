@@ -11,13 +11,16 @@
   <h1>Signup</h1>
   <style>
     /* General Form Styling */
+    body{
+      background: black;
+    }
     form {
       max-width: 400px;
       margin: 0 auto;
       padding: 20px;
-      border: 1px solid #ddd;
       border-radius: 8px;
-      background-color: #f9f9f9;
+      
+      
     }
 
     p {
@@ -30,7 +33,10 @@
       display: block;
       margin-bottom: 8px;
       font-weight: bold;
-      color: #555;
+      color: #fff;
+      font-family: sans-serif;
+      position: relative;
+      z-index: 10;
     }
 
     input[type="text"],
@@ -41,20 +47,24 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       box-sizing: border-box;
+      position: relative;
+      z-index: 10;
     }
 
     button {
-      background-color: #007bff;
+      background-color: #2c34b4;
       color: white;
       border: none;
       padding: 10px 20px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
+      position: relative;
+      z-index: 10;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: #0c1494;
     }
 
     /* Ensure Consistency Across Forms */
@@ -68,10 +78,24 @@
     #signupForm p {
       margin-top: 0;
       font-size: 12px;
-      color: #777;
+      color: #bbb;
+      font-family: sans-serif;
+      position: relative;
+      z-index: 10;
+    }
+    .shadow-effect{
+      height: 512px;
+      width: 512px;
+      position: absolute;
+      top:-100px;
+      left: -100px;
+      background-color: #fe2d4d;
+      border-radius: 256px;
+      filter: blur(168px);
     }
   </style>
   <form id="signupForm">
+    <div class="shadow-effect"></div>
     <p>We are giving users a evaluation period until September 1st, when all data will be deleted.</p>
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" required>

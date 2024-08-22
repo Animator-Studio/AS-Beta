@@ -8,6 +8,7 @@
 <body>
   <h1>Login</h1>
   <style>
+    body{ background: black; font-family: sans-serif;}
     /* General Form Styling */
 form {
   max-width: 400px;
@@ -16,19 +17,25 @@ form {
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
+  position: relative;
+      z-index: 10;
 }
 
 p {
   font-size: 14px;
   color: #333;
   margin-bottom: 20px;
+  position: relative;
+      z-index: 10;
 }
 
 label {
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #555;
+  color: #fff;
+  position: relative;
+      z-index: 10;
 }
 
 input[type="text"],
@@ -49,6 +56,8 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  position: relative;
+      z-index: 10;
 }
 
 button:hover {
@@ -62,15 +71,19 @@ button:hover {
   flex-direction: column;
 }
 
-/* Adjustments for Signup Form */
-#signupForm p {
-  margin-top: 0;
-  font-size: 12px;
-  color: #777;
-}
-
+.shadow-effect{
+      height: 512px;
+      width: 512px;
+      position: absolute;
+      top:-100px;
+      left: -100px;
+      background-color: #fe2d4d;
+      border-radius: 256px;
+      filter: blur(168px);
+    }
   </style>
   <form id="loginForm">
+    <div class="shadow-effect"></div>
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" required>
     <br>
