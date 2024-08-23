@@ -224,4 +224,27 @@ async function checkAuth() {
     return false;
   }
 }
+function logOut() {
+  document.cookie.split(';').forEach(cookie => {
+      const eqPos = cookie.indexOf('=');
+      const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  });
+  window.location.reload()
+}
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuButton = document.getElementById('menu-button');
+        const menu = document.getElementById('menu');
 
+        menuButton.addEventListener('click', () => {
+            const isVisible = menu.style.display === 'block';
+            menu.style.display = isVisible ? 'none' : 'block';
+        });
+
+        // Hide the menu if clicking outside of it
+        document.addEventListener('click', (event) => {
+            if (!menu.contains(event.target) && event.target !== menuButton) {
+                menu.style.display = 'none';
+            }
+        });
+    });
