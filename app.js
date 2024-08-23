@@ -30,6 +30,7 @@ function hashAndTruncate(input, length = 64) {
 app.use(express.json());
 app.use("/resources/home", express.static(path.join(__dirname, "pages", "home")));
 app.use("/animations/resources/editor", express.static(path.join(__dirname, "pages", "editor")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 // Serve the home page
 app.get("/", (req, res) => {
@@ -40,29 +41,12 @@ app.get("/", (req, res) => {
       console.error(err);
       return;
     }
-    out = `
-    <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <script type="text/javascript">
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "nrvoacr6ky");
-        </script>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Home</title>       
-          <link rel="stylesheet" type="text/css" href="/resources/home/styles.css">
-          <link rel="icon" type="image/x-icon" href="/images/favicon.png">
-      </head>
-      <body>
+    var out = `
+    
       ${data}
-      </body>
-      </html>
+      
     `
-    res.send(data);
+    res.send(out);
   });
 });
 
@@ -194,6 +178,28 @@ app.get("/onboard", (req, res) => {
       console.error(err);
       return;
     }
+    var out = `
+    <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <script type="text/javascript">
+            (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "nrvoacr6ky");
+        </script>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Create awesome animations in a snap | Animator-Studio</title>       
+          <link rel="stylesheet" type="text/css" href="/resources/home/styles.css">
+          <link rel="icon" type="image/x-icon" href="../images/favicon.png">
+      </head>
+      <body>
+      ${data}
+      </body>
+      </html>
+      `
     res.send(data);
   });
 });
