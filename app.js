@@ -45,13 +45,16 @@ app.get("/", (req, res) => {
     <!DOCTYPE html>
       <html lang="en">
       <head>
-        <script type="text/javascript">
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "nrvoacr6ky");
-        </script>
+        <script>
+  window.op = window.op||function(...args){(window.op.q=window.op.q||[]).push(args);};
+  window.op('init', {
+    clientId: '17393df4-4fff-44dc-aac7-bef3acb32aa2',
+    trackScreenViews: true,
+    trackOutgoingLinks: true,
+    trackAttributes: true,
+  });
+</script>
+<script src="https://openpanel.dev/op1.js" defer async></script>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Home | Animator-Studio</title>       
