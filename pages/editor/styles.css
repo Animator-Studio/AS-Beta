@@ -217,7 +217,8 @@ input {
 }
 
 .element-picker {
-    display: none;
+    opacity: 0;
+    filter: blur(16px);
     border-radius: 16px;
     flex-direction: column;
     align-items: center;
@@ -231,6 +232,7 @@ input {
     background: white;
     padding: 32px;
     z-index: 5000;
+    display: flex;
 }
 
 .element-picker button {
