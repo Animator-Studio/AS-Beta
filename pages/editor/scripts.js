@@ -405,7 +405,8 @@ function generate() {
 
 
 $('#elementPickerDoneButton').onclick = () => {
-  $('#elementPickerDialog').style.display = 'none';
+  gsap.set('#elementPickerDialog', {opacity: 1, y: -100})
+  gsap.to('#elementPickerDialog', {filter: "blur(0px)", y: 0})
   const itemCount = parseInt($('#elementNumber').value, 10); // Get the number of items
   $('.preview').innerHTML = Array.from(
     { length: itemCount },
@@ -415,7 +416,8 @@ $('#elementPickerDoneButton').onclick = () => {
 };
 
 $('#addElements').onclick = () => {
-  $('#elementPickerDialog').style.display = 'flex';
+  
+  gsap.to('#elementPickerDialog', {filter: "blur(16px)", y: -200, opacity: 0, duration: 1})
 };
 
 
