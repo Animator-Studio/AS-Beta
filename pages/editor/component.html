@@ -27,6 +27,7 @@
 
         <div class="param-box">
             <div class="tween-name"></div>
+            <div id="selectedElementDisplay" style="font-size:12px;color:#ffb700;margin-bottom:4px;display:none;"></div>
 
             <p style="margin-bottom: 0">Elements:</p>
             <input type="text" id="elemRange" placeholder="(1,2,3-6)" value="1">
@@ -64,10 +65,19 @@
 
             <button id="save">Save</button>
         </div>
+
+        <div class="real-element-loader" style="margin-top: 24px;">
+            <h3 style="margin-bottom: 4px;">Load Webpage or HTML</h3>
+            <input type="text" id="webpageUrl" placeholder="Paste URL or HTML snippet" style="width: 90%; margin-bottom: 4px;">
+            <button id="loadWebpageBtn">Load</button>
+            <button id="selectElementBtn" style="margin-left: 8px;">Select Element</button>
+            <small id="loadStatus" style="display:block;margin-top:4px;color:#aaa;"></small>
+        </div>
     </div>
 
-    <div class="preview">
-
+    <div class="preview" style="position:relative;">
+        <iframe id="previewIframe" style="width:100%;height:100%;border:none;display:none;"></iframe>
+        <div id="previewOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></div>
     </div>
 
     <div class="timeline"></div>
@@ -117,6 +127,24 @@
             <li id="edit-tween">Edit</li>
             <li id="delete-tween">Delete</li>
         </ul>
+    </div>
+
+    <div id="ai-assistant-toggle" style="position:fixed;right:32px;bottom:32px;z-index:9999;background:#ff007a;color:white;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px #0008;cursor:pointer;font-size:2rem;transition:background 0.2s;">
+        🤖
+    </div>
+    <div id="ai-assistant-sidebar" style="position:fixed;right:0;top:0;height:100vh;width:340px;max-width:90vw;background:#181828;color:white;z-index:9998;box-shadow:-4px 0 24px #0008;display:none;flex-direction:column;">
+        <div style="padding:16px 20px;border-bottom:1px solid #333;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-weight:bold;font-size:1.2rem;">AI Animation Assistant</span>
+            <button id="ai-assistant-close" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
+        </div>
+        <div style="flex:1;overflow:auto;padding:20px;">
+            <div id="ai-assistant-messages" style="font-size:1rem;line-height:1.6;"></div>
+            <div style="margin-top:24px;">
+                <input id="ai-assistant-input" type="text" placeholder="Describe your animation idea..." style="width:80%;padding:8px 12px;border-radius:8px;border:none;background:#222;color:white;">
+                <button id="ai-assistant-send" style="padding:8px 16px;margin-left:8px;background:#ff007a;color:white;border:none;border-radius:8px;cursor:pointer;">Send</button>
+            </div>
+            <div style="margin-top:16px;font-size:0.9em;color:#aaa;">Try: <i>"Make the button bounce in", "Fade out the header after 2s"</i></div>
+        </div>
     </div>
 
     <script src="resources/editor/scripts.js"></script>

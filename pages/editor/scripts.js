@@ -103,34 +103,9 @@ const recalculate = () => {
   tl.pause(0);
   tl.clear();
   tl.kill();
-  tl.set('.preview-box', {});
-  // Add new tweens to the timeline
+  // For each tween, use its selector
   tweenStack.forEach((tween) => {
-    if (tween.position == "+=0") {
-      const fromData = tween.fromVars.reduce((acc, curr) => {
-        acc[curr.key] = curr.value;
-        return acc;
-      }, {});
-      const toData = tween.toVars.reduce((acc, curr) => {
-        acc[curr.key] = curr.value;
-        return acc;
-      }, {});
-
-      toData.duration = tween.duration;
-      toData.stagger = tween.stagger;
-      toData.ease = tween.easing || 'linear';
-
-      if (tween.fromVars.length === 0) {
-        tl.to(getElementsInRange(tween.elements), toData);
-      } else {
-        tl.fromTo(getElementsInRange(tween.elements), fromData, toData);
-      }
-    }
-    else {
-      notDone.push(tween)
-    }
-  });
-  notDone.forEach((tween) => {
+    const targetSelector = tween.selector || '.preview-box';
     const fromData = tween.fromVars.reduce((acc, curr) => {
       acc[curr.key] = curr.value;
       return acc;
@@ -139,18 +114,15 @@ const recalculate = () => {
       acc[curr.key] = curr.value;
       return acc;
     }, {});
-
     toData.duration = tween.duration;
     toData.stagger = tween.stagger;
     toData.ease = tween.easing || 'linear';
-
     if (tween.fromVars.length === 0) {
-      tl.to(getElementsInRange(tween.elements), toData, tween.position);
+      tl.to(targetSelector, toData);
     } else {
-      tl.fromTo(getElementsInRange(tween.elements), fromData, toData, tween.position);
+      tl.fromTo(targetSelector, fromData, toData);
     }
-  })
-  // Play the new timeline
+  });
   tl.play();
 };
 
@@ -260,11 +232,20 @@ $('.add-tween').onclick = () => {
     handleClick(event)
   });
 
+  // Store selector in tweenStack
+  const selector = selectedElementSelector || '.preview-box';
   tweenStack.push({
     element: $('.timeline').appendChild(tween),
     fromVars: [],
     toVars: [],
+    selector: selector
   });
+  // Show selector in param box
+  const display = document.getElementById('selectedElementDisplay');
+  if (display) {
+    display.style.display = 'block';
+    display.textContent = `Target: ${selector}`;
+  }
 
   const allTweens = document.querySelectorAll('.tween');
   allTweens.forEach((tween, index) => {
@@ -599,11 +580,116 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// --- Real Webpage/Element Loader & Selector ---
+const loadWebpageBtn = document.getElementById('loadWebpageBtn');
+const webpageUrlInput = document.getElementById('webpageUrl');
+const previewIframe = document.getElementById('previewIframe');
+const previewOverlay = document.getElementById('previewOverlay');
+const loadStatus = document.getElementById('loadStatus');
+const selectElementBtn = document.getElementById('selectElementBtn');
 
+let elementSelectorActive = false;
+let lastHighlighted = null;
+let selectedElementSelector = null;
 
+loadWebpageBtn.onclick = async () => {
+  const value = webpageUrlInput.value.trim();
+  if (!value) return;
+  loadStatus.textContent = 'Loading...';
+  // If it's a URL, load in iframe. If it's HTML, inject as srcdoc.
+  if (/^https?:\/\//.test(value)) {
+    previewIframe.src = value;
+    previewIframe.srcdoc = '';
+    previewIframe.style.display = 'block';
+    loadStatus.textContent = 'Loaded webpage in preview.';
+  } else {
+    previewIframe.removeAttribute('src');
+    previewIframe.srcdoc = value;
+    previewIframe.style.display = 'block';
+    loadStatus.textContent = 'Loaded HTML snippet in preview.';
+  }
+};
 
+selectElementBtn.onclick = () => {
+  if (!previewIframe.style.display || previewIframe.style.display === 'none') {
+    loadStatus.textContent = 'Load a webpage or HTML first!';
+    return;
+  }
+  elementSelectorActive = !elementSelectorActive;
+  selectElementBtn.textContent = elementSelectorActive ? 'Selecting... (Click to stop)' : 'Select Element';
+  if (elementSelectorActive) {
+    loadStatus.textContent = 'Click an element in the preview to select it.';
+    enableIframeElementSelector();
+  } else {
+    loadStatus.textContent = '';
+    disableIframeElementSelector();
+  }
+};
 
+function enableIframeElementSelector() {
+  try {
+    const iframeDoc = previewIframe.contentDocument || previewIframe.contentWindow.document;
+    if (!iframeDoc) return;
+    iframeDoc.body.style.cursor = 'crosshair';
+    iframeDoc.addEventListener('mouseover', highlightElement, true);
+    iframeDoc.addEventListener('mouseout', unhighlightElement, true);
+    iframeDoc.addEventListener('click', selectElement, true);
+  } catch (e) {
+    loadStatus.textContent = 'Cannot access iframe contents (CORS). Try a different URL or use HTML snippet.';
+  }
+}
 
+function disableIframeElementSelector() {
+  try {
+    const iframeDoc = previewIframe.contentDocument || previewIframe.contentWindow.document;
+    if (!iframeDoc) return;
+    iframeDoc.body.style.cursor = '';
+    iframeDoc.removeEventListener('mouseover', highlightElement, true);
+    iframeDoc.removeEventListener('mouseout', unhighlightElement, true);
+    iframeDoc.removeEventListener('click', selectElement, true);
+    if (lastHighlighted) {
+      lastHighlighted.style.outline = '';
+      lastHighlighted = null;
+    }
+  } catch (e) {}
+}
+
+function highlightElement(e) {
+  if (lastHighlighted) lastHighlighted.style.outline = '';
+  lastHighlighted = e.target;
+  lastHighlighted.style.outline = '2px solid #ff007a';
+}
+
+function unhighlightElement(e) {
+  if (e.target === lastHighlighted) {
+    lastHighlighted.style.outline = '';
+    lastHighlighted = null;
+  }
+}
+
+function selectElement(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (lastHighlighted) lastHighlighted.style.outline = '';
+  selectedElementSelector = getDomSelector(e.target);
+  loadStatus.textContent = `Selected: ${selectedElementSelector}`;
+  elementSelectorActive = false;
+  selectElementBtn.textContent = 'Select Element';
+  disableIframeElementSelector();
+  // Show selector in param box
+  const display = document.getElementById('selectedElementDisplay');
+  if (display) {
+    display.style.display = 'block';
+    display.textContent = `Target: ${selectedElementSelector}`;
+  }
+}
+
+// Helper: get a unique CSS selector for an element
+function getDomSelector(el) {
+  if (el.id) return `#${el.id}`;
+  if (el.className && typeof el.className === 'string') return `${el.tagName.toLowerCase()}.${el.className.trim().replace(/\s+/g, '.')}`;
+  return el.tagName.toLowerCase();
+}
 
 function w3CodeColor(elmnt, mode) {
   var lang = mode || 'html';
@@ -1224,4 +1310,54 @@ function w3CodeColor(elmnt, mode) {
     }
     return [-1, -1, func];
   }
+}
+
+// --- AI Assistant Sidebar Logic ---
+const aiToggle = document.getElementById('ai-assistant-toggle');
+const aiSidebar = document.getElementById('ai-assistant-sidebar');
+const aiClose = document.getElementById('ai-assistant-close');
+const aiInput = document.getElementById('ai-assistant-input');
+const aiSend = document.getElementById('ai-assistant-send');
+const aiMessages = document.getElementById('ai-assistant-messages');
+
+if (aiToggle && aiSidebar && aiClose && aiInput && aiSend && aiMessages) {
+  aiToggle.onclick = () => {
+    aiSidebar.style.display = 'flex';
+    aiToggle.style.display = 'none';
+    // Show a friendly greeting and suggestions if first open
+    if (!aiMessages.dataset.greeted) {
+      aiMessages.innerHTML = `<div style='margin-bottom:12px;'><b>AI:</b> 👋 Hi! I'm your animation assistant. Describe what you want to animate, or try one of these ideas:</div>
+        <ul style='margin-bottom:16px;color:#ffb700;'>
+          <li>"Make the button bounce in with elastic ease"</li>
+          <li>"Fade out the header after 2 seconds"</li>
+          <li>"Stagger the list items from left to right"</li>
+        </ul>`;
+      aiMessages.dataset.greeted = 'true';
+    }
+  };
+  aiClose.onclick = () => {
+    aiSidebar.style.display = 'none';
+    aiToggle.style.display = 'flex';
+  };
+  aiSend.onclick = sendAIMessage;
+  aiInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendAIMessage();
+  });
+}
+
+function sendAIMessage() {
+  const msg = aiInput.value.trim();
+  if (!msg) return;
+  aiMessages.innerHTML += `<div style='margin-bottom:8px;'><b>You:</b> ${escapeHtml(msg)}</div>`;
+  aiInput.value = '';
+  // Placeholder AI response
+  setTimeout(() => {
+    aiMessages.innerHTML += `<div style='margin-bottom:16px;'><b>AI:</b> <span style='color:#ffb700;'>[This is where smart animation suggestions will appear!]</span></div>`;
+    aiMessages.scrollTop = aiMessages.scrollHeight;
+  }, 600);
+}
+function escapeHtml(text) {
+  return text.replace(/[&<>"]/g, function(m) {
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m];
+  });
 }
